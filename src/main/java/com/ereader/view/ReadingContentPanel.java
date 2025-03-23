@@ -32,6 +32,7 @@ import java.awt.event.MouseWheelListener;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Displays a page
@@ -55,14 +56,12 @@ public class ReadingContentPanel extends JPanel implements NavigationEventListen
 			
 			@Override
 			public void keyTyped(KeyEvent e) {
-				// TODO Auto-generated method stub
-				
+
 			}
 			
 			@Override
 			public void keyReleased(KeyEvent e) {
-				// TODO Auto-generated method stub
-				
+
 			}
 			
 			@Override
@@ -194,7 +193,11 @@ public class ReadingContentPanel extends JPanel implements NavigationEventListen
 	private JEditorPane createJEditorPane() {
 		JEditorPane editorPane = new JEditorPane();
 		editorPane.setBackground(Color.white);
+		editorPane.setContentType("text/html");
 		editorPane.setEditable(false);
+
+
+
 		HTMLEditorKit htmlKit = new HTMLEditorKit();
 		// StyleSheet myStyleSheet = new StyleSheet();
 		// String normalTextStyle = "font-size: 12px, font-family: georgia";
@@ -202,6 +205,25 @@ public class ReadingContentPanel extends JPanel implements NavigationEventListen
 		// myStyleSheet.addRule("p {" + normalTextStyle + "}");
 		// myStyleSheet.addRule("div {" + normalTextStyle + "}");
 		// htmlKit.setStyleSheet(myStyleSheet);
+
+
+
+		htmlKit.getStyleSheet().addRule("body { padding: 20px; }");
+		htmlKit.getStyleSheet().addRule("body { background-color: #FAF3E0; color: #333333;}");
+		htmlKit.getStyleSheet().addRule("p { font-size: 18px; font-family: serif; word-wrap: break-word; white-space: normal; margin-bottom: 20px; }");
+		htmlKit.getStyleSheet().addRule("h1 { font-size: 28px; font-family: serif; color: #333333; }");
+		htmlKit.getStyleSheet().addRule("h2 { font-size: 26px; font-family: serif; }");
+		htmlKit.getStyleSheet().addRule("h3 { font-size: 24px; font-family: serif; }");
+		htmlKit.getStyleSheet().addRule("h4 { font-size: 24px; font-family: serif; }");
+		htmlKit.getStyleSheet().addRule("h5 { font-size: 24px; font-family: serif; }");
+		htmlKit.getStyleSheet().addRule("h6 { font-size: 20px; font-family: serif; }");
+		htmlKit.getStyleSheet().addRule("figure { margin-top: 40px; margin-bottom: 40px; }");
+		htmlKit.getStyleSheet().addRule("img { display: block; margin-left: auto; margin-right: auto; margin-bottom: 20px; }");
+
+		htmlKit.getStyleSheet().addRule("pre { background-color: #f4f4f4; border: 1px solid #ddd; padding: 10px; overflow-x: auto; }");
+		htmlKit.getStyleSheet().addRule("code { font-family: 'Courier New', Courier, monospace; font-size: 14px; color: #d6336c; }");
+
+
 		editorPane.setEditorKit(htmlKit);
 		editorPane.addHyperlinkListener(this);
 		editorPane.addKeyListener(new KeyListener() {
@@ -212,7 +234,6 @@ public class ReadingContentPanel extends JPanel implements NavigationEventListen
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				// TODO Auto-generated method stub
 
 			}
 
@@ -247,6 +268,7 @@ public class ReadingContentPanel extends JPanel implements NavigationEventListen
 				return;
 			}
 			currentResource = resource;
+			System.out.println(new String(resource.getData(), StandardCharsets.UTF_8));
 			editorPane.setDocument(document);
 			scrollToCurrentPosition(sectionPos);
 		} catch (Exception e) {
