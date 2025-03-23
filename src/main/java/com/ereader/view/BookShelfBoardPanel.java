@@ -130,13 +130,8 @@ public class BookShelfBoardPanel extends JPanel {
     }
 
     private void onBookClicked(Book book) {
-        JFrame currentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-
-        ReadingPanel readingPanel = new ReadingPanel(book);
-        currentFrame.setContentPane(readingPanel);
-
-
-        currentFrame.revalidate();
-        currentFrame.repaint();
+        ReadingPanel readingPanel = ReadingPanel.getInstance();
+        readingPanel.setBook(book);
+        AppFrame.getInstance().switchToPanel(readingPanel);
     }
 }

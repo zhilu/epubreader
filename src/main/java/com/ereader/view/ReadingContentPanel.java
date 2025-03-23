@@ -41,8 +41,7 @@ public class ReadingContentPanel extends JPanel implements NavigationEventListen
 
 	private static final long serialVersionUID = -5322988066178102320L;
 
-	private static final Logger log = LoggerFactory
-			.getLogger(ReadingContentPanel.class);
+	private static final Logger log = LoggerFactory.getLogger(ReadingContentPanel.class);
 	private Navigator navigator;
 	private Resource currentResource;
 	private JEditorPane editorPane;

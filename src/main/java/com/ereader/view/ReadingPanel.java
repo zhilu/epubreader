@@ -4,16 +4,17 @@ import com.ereader.service.EpubBookService;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 
 public class ReadingPanel extends JPanel {
 
+    private static ReadingPanel INSTANCE = null;
+
+
     private static final float percent= 0.18F;
+    private static final float SPLIT_META= 0.8F;
 
     private Book book;
     private EpubBookService epubBookService;
@@ -22,38 +23,48 @@ public class ReadingPanel extends JPanel {
     private ReadingContentPanel contentPanel;
     private Navigator navigator = new Navigator();
 
-    public ReadingPanel(Book book) {
+    public static ReadingPanel getInstance(){
+        if(null == INSTANCE){
+            INSTANCE = new ReadingPanel();
+        }
+        return INSTANCE;
+    }
+
+    public ReadingPanel() {
         setLayout(new BorderLayout());
-        JButton backButton = new JButton("返回书架");
-        backButton.addActionListener(e -> backToShelf());
-        add(backButton, BorderLayout.NORTH);
+    }
 
+    public void setBook(Book book){
         this.book = book;
-        this.epubBookService = new EpubBookService();
+        this.navigator = new Navigator();
+        initUI();
+    }
 
+    private void initUI() {
+        removeAll();
+
+        // 创建分割面板
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         toc = new ReadingTOCPanel(navigator);
         contentPanel = new ReadingContentPanel(navigator);
-        splitPane.setLeftComponent(toc);
+
+        JSplitPane leftPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        MetadataPanel metadataPane = new MetadataPanel(navigator);
+        leftPanel.setTopComponent(toc);
+        leftPanel.setBottomComponent(metadataPane);
+        leftPanel.setResizeWeight(SPLIT_META);
+
+        splitPane.setLeftComponent(leftPanel);
         splitPane.setResizeWeight(percent);
         splitPane.setRightComponent(contentPanel);
-        navigator.gotoBook(book, this);
 
         add(splitPane, BorderLayout.CENTER);
 
-
+        // 加载书籍
         navigator.gotoBook(book, this);
         navigator.gotoFirstSpineSection(this);
 
-    }
-
-
-
-    private void backToShelf() {
-        JFrame currentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        BookshelfPanel shelfBoard = BookshelfPanel.instance;
-        currentFrame.setContentPane(shelfBoard);
-        currentFrame.revalidate();
-        currentFrame.repaint();
+        revalidate();
+        repaint();
     }
 }
