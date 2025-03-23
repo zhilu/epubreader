@@ -23,7 +23,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
 
-public class BookshelfList extends JPanel {
+public class BookshelfListPanel extends JPanel {
 
     public BookshelfService bookshelfService = new BookshelfService();
 
@@ -33,10 +33,10 @@ public class BookshelfList extends JPanel {
     private JScrollPane pane;
     DefaultListModel<ShelfItem> listModel;
     JList<ShelfItem> list;
-    BookShelfBoard bookShelfBoard;
+    BookShelfBoardPanel bookShelfBoard;
 
 
-    public BookshelfList(BookShelfBoard bookShelfBoard){
+    public BookshelfListPanel(BookShelfBoardPanel bookShelfBoard){
         setLayout(new BorderLayout());
         this.bookShelfBoard = bookShelfBoard;
 

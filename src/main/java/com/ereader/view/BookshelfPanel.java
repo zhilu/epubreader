@@ -1,67 +1,46 @@
-package com.ereader;
+package com.ereader.view;
 
-import com.ereader.view.BookShelfBoard;
-import com.ereader.view.BookshelfList;
+import com.ereader.App;
 
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.BorderLayout;
 import java.io.File;
 import java.util.prefs.Preferences;
 
-import static com.ereader.Constants.APP_NAME;
+public class BookshelfPanel extends JPanel {
 
-public class Ereader {
+    public static BookshelfPanel instance = new BookshelfPanel();
 
-    public static final int WIDTH = 800;
-    public static final int HEIGHT = 600;
+
     public static final float shelves_percent = 0.15f;
 
     private static final String LAST_PATH_KEY = "history";
-    private static Preferences preferences = Preferences.userNodeForPackage(Ereader.class);
+    private static Preferences preferences = Preferences.userNodeForPackage(App.class);
 
 
+    private BookshelfListPanel shelves;
+    private BookShelfBoardPanel board;
 
-    private BookshelfList shelves;
-    private BookShelfBoard board;
+    private BookshelfPanel(){
+        board = new BookShelfBoardPanel();
+        shelves = new BookshelfListPanel(board);
 
-    public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        SwingUtilities.invokeLater(() -> {
-            Ereader app = new Ereader();
-            app.createAndShowGUI();
-        });
-    }
-
-    private void createAndShowGUI() {
-        JFrame frame = new JFrame(APP_NAME);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(WIDTH,HEIGHT);
-
-        board = new BookShelfBoard();
-        shelves = new BookshelfList(board);
-
-
-        
         JSplitPane main = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, shelves, board);
         main.setResizeWeight(shelves_percent);
 
-        frame.add(main);
-        frame.setJMenuBar(create());
-        frame.setVisible(true);
+        setLayout(new BorderLayout());
+
+        add(main, BorderLayout.CENTER);
     }
+
+
 
     public JMenuBar create(){
         JMenuBar menuBar = new JMenuBar();
@@ -132,6 +111,4 @@ public class Ereader {
             }
         }
     }
-
-
 }

@@ -3,19 +3,30 @@ package com.ereader.view;
 import com.ereader.Constants;
 import com.ereader.model.MyBook;
 import com.ereader.model.ShelfItem;
+import com.ereader.service.EpubBookService;
+import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Resource;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.RenderingHints;
+import java.io.IOException;
 import java.util.List;
 
-public class BookShelfBoard  extends JPanel {
+public class BookShelfBoardPanel extends JPanel {
+
+    private EpubBookService epubBookService = new EpubBookService();
 
     private static final String default_cover = "/images/book.png";
     private List<MyBook> books;
@@ -24,7 +35,8 @@ public class BookShelfBoard  extends JPanel {
     private final int booksPerPage = 20;
 
 
-    public BookShelfBoard(){
+
+    public BookShelfBoardPanel(){
         setLayout(new GridLayout(4, 5, 10, 10));
     }
 
@@ -86,8 +98,24 @@ public class BookShelfBoard  extends JPanel {
 
         for (int i = start; i < end; i++) {
             MyBook book = books.get(i);
-            JButton bookButton = new JButton(book.getCoverImage());
+            Book epubBook = epubBookService.resole(book.getFilePath());
+            Resource coverImageResource = epubBook.getCoverImage();
+            Image image = null;
+            try {
+                image = ImageIO.read(coverImageResource.getInputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ImageIcon icon = new ImageIcon(image.getScaledInstance(100, 150, Image.SCALE_SMOOTH));
+            JButton bookButton = new JButton(icon);
             bookButton.setToolTipText(book.getBookName() + " by " + book.getAuthor());
+
+
+            bookButton.addActionListener(e -> {
+                onBookClicked(epubBook);
+            });
+
+            
             add(bookButton);
         }
 
@@ -99,5 +127,16 @@ public class BookShelfBoard  extends JPanel {
 
         revalidate();
         repaint();
+    }
+
+    private void onBookClicked(Book book) {
+        JFrame currentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+
+        ReadingPanel readingPanel = new ReadingPanel(book);
+        currentFrame.setContentPane(readingPanel);
+
+
+        currentFrame.revalidate();
+        currentFrame.repaint();
     }
 }
