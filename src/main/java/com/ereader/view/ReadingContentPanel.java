@@ -1,6 +1,7 @@
 package com.ereader.view;
 
 import com.ereader.DesktopUtil;
+import com.ereader.service.OpenAIService;
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.browsersupport.NavigationEvent;
 import nl.siegmann.epublib.browsersupport.NavigationEventListener;
@@ -12,12 +13,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.JEditorPane;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
@@ -27,6 +33,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.UnsupportedEncodingException;
@@ -87,7 +95,7 @@ public class ReadingContentPanel extends JPanel implements NavigationEventListen
 					if (viewPosition.getY() - increment < 0) {
 						if (gotoPreviousPage) {
 							gotoPreviousPage = false;
-							ReadingContentPanel.this.navigator.gotoPreviousSpineSection(-1, ReadingContentPanel.this);
+							navigator.gotoPreviousSpineSection(-1, this);
 						} else {
 							gotoPreviousPage = true;
 							scrollPane.getViewport().setViewPosition(new Point((int) viewPosition.getX(), 0));
@@ -197,6 +205,15 @@ public class ReadingContentPanel extends JPanel implements NavigationEventListen
 		editorPane.setEditable(false);
 
 
+		editorPane.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) { // 右键点击
+					showPopupMenu(e, editorPane);
+				}
+			}
+		});
+
 
 		HTMLEditorKit htmlKit = new HTMLEditorKit();
 		// StyleSheet myStyleSheet = new StyleSheet();
@@ -252,6 +269,50 @@ public class ReadingContentPanel extends JPanel implements NavigationEventListen
 			}
 		});
 		return editorPane;
+	}
+
+	private void showPopupMenu(MouseEvent e, JEditorPane editorPane) {
+		JPopupMenu popupMenu = new JPopupMenu();
+
+		String selectedText = editorPane.getSelectedText();
+
+		JMenuItem translateItem = new JMenuItem("翻译");
+		translateItem.addActionListener(ev -> translateText(selectedText));
+		popupMenu.add(translateItem);
+
+		// 添加 "标记文本" 选项
+		JMenuItem highlightItem = new JMenuItem("标记文本");
+		highlightItem.addActionListener(ev -> highlightText(editorPane));
+		popupMenu.add(highlightItem);
+
+		// 显示菜单
+		popupMenu.show(e.getComponent(), e.getX(), e.getY());
+	}
+
+	private void highlightText(JEditorPane editorPane) {
+		String selectedText = editorPane.getSelectedText();
+		if (selectedText == null || selectedText.isEmpty()) {
+			return;
+		}
+		int start = editorPane.getSelectionStart();
+		int end = editorPane.getSelectionEnd();
+
+		Highlighter highlighter = editorPane.getHighlighter();
+		Highlighter.HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW);
+		try {
+			highlighter.addHighlight(start, end, painter);
+		} catch (BadLocationException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private void translateText(String text) {
+		if (text == null || text.isEmpty()) return;
+
+		// 这里可以调用翻译接口，例如 Google 翻译 API
+		String translatedText = OpenAIService.INSTANCE.translate(text); // 假设翻译后的文本
+
+		JOptionPane.showMessageDialog(null, translatedText, "翻译结果", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	public void displayPage(Resource resource) {
