@@ -10,13 +10,17 @@ import java.util.List;
 
 @Setter
 @Getter
-public class ShelfItem {
+public class Bookshelf {
 
+    private Integer id;
     private String name;
     private String icon;
     private List<MyBook> books = new ArrayList<>();
 
-    public ShelfItem(String name){
+    public Bookshelf(){
+    }
+
+    public Bookshelf(String name){
         this.name = name;
     }
 
@@ -29,10 +33,7 @@ public class ShelfItem {
         return books;
     }
 
-    public void addBook(File file) {
-        MyBook myBook = new MyBook(file.getName());
-        myBook.setFilePath(file.getAbsolutePath());
-        myBook.setFileName(file.getName());
+    public void addBook(MyBook myBook) {
         books.add(myBook);
     }
 }

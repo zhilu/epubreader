@@ -8,6 +8,7 @@ import nl.siegmann.epublib.domain.Book;
 @Setter
 public class MyBook {
 
+    private Integer id;
     private String bookName;
 
     private String coverImage;
@@ -16,6 +17,9 @@ public class MyBook {
     private String fileName;
     private String filePath;
     private Book book;
+
+    public MyBook() {
+    }
 
     public MyBook(String name) {
         this.bookName = name;

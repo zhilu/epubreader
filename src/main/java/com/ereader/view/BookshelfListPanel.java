@@ -1,7 +1,8 @@
 package com.ereader.view;
 
 import com.ereader.Constants;
-import com.ereader.model.ShelfItem;
+import com.ereader.model.Bookshelf;
+import com.ereader.model.MyBook;
 import com.ereader.service.BookshelfService;
 
 import javax.swing.DefaultListCellRenderer;
@@ -25,19 +26,20 @@ import java.util.List;
 
 public class BookshelfListPanel extends JPanel {
 
-    public BookshelfService bookshelfService = new BookshelfService();
+    public BookshelfService bookshelfService = BookshelfService.INSTANCE;
 
     private static final String default_icon = "/images/books.png";
     private static final float ICON_FACTOR = 1.5F;
 
     private JScrollPane pane;
-    DefaultListModel<ShelfItem> listModel;
-    JList<ShelfItem> list;
+    DefaultListModel<Bookshelf> listModel;
+    JList<Bookshelf> list;
     BookShelfBoardPanel bookShelfBoard;
 
 
     public BookshelfListPanel(BookShelfBoardPanel bookShelfBoard){
         setLayout(new BorderLayout());
+        bookshelfService.init();
         this.bookShelfBoard = bookShelfBoard;
 
         listModel = new DefaultListModel<>();
@@ -56,16 +58,17 @@ public class BookshelfListPanel extends JPanel {
                 if(index == -1){
                     return;
                 }
-                ShelfItem selectedItem = listModel.getElementAt(index);
+                Bookshelf bookshelf = listModel.getElementAt(index);
                 if (e.getClickCount() == 2) {
 
-                    String newName = JOptionPane.showInputDialog("修改书架名称:", selectedItem.getName());
+                    String newName = JOptionPane.showInputDialog("修改书架名称:", bookshelf.getName());
                     if (newName != null && !newName.trim().isEmpty()) {
-                        selectedItem.setName(newName);
-                        listModel.setElementAt(selectedItem, index);
+                        bookshelf.setName(newName);
+                        listModel.setElementAt(bookshelf, index);
+                        bookshelfService.updateBookshelf(bookshelf);
                     }
                 }else if(e.getClickCount() ==1){
-                    bookShelfBoard.load(selectedItem);
+                    bookShelfBoard.init(bookshelf);
                 }
             }
         });
@@ -75,17 +78,22 @@ public class BookshelfListPanel extends JPanel {
 
 
         addButton.addActionListener(e -> {
-            String newItem = JOptionPane.showInputDialog("输入新项目:");
-            if (newItem != null && !newItem.trim().isEmpty()) {
-                listModel.addElement(new ShelfItem(newItem));
+            String shelfName = JOptionPane.showInputDialog("创建新书架:");
+            if (shelfName != null && !shelfName.trim().isEmpty()) {
+                Bookshelf bookshelf = new Bookshelf();
+                bookshelf.setName(shelfName);
+                bookshelfService.addBookshelf(bookshelf);
+                listModel.addElement(bookshelf);
                 list.ensureIndexIsVisible(listModel.size() - 1);
+
             }
         });
 
         removeButton.addActionListener(e -> {
             int selectedIndex = list.getSelectedIndex();
             if (selectedIndex != -1) {
-                listModel.remove(selectedIndex);
+                Bookshelf bookshelf = listModel.remove(selectedIndex);
+                bookshelfService.deleteBookshelf(bookshelf.getId());
             } else {
                 JOptionPane.showMessageDialog(this, "请先选择一个要删除的项目");
             }
@@ -98,15 +106,15 @@ public class BookshelfListPanel extends JPanel {
 
         load();
         if(!listModel.isEmpty()){
-            bookShelfBoard.load(listModel.elementAt(0));
+            bookShelfBoard.init(listModel.elementAt(0));
         }
     }
 
     public void load(){
-        List<ShelfItem> items = bookshelfService.loadBookshelf();
-        listModel.clear();  // 清空旧数据
-        for (ShelfItem item : items) {
-            listModel.addElement(item);  // 正确添加数据
+        List<Bookshelf> items = bookshelfService.listBookshelf();
+        listModel.clear();
+        for (Bookshelf item : items) {
+            listModel.addElement(item);
         }
     }
 
@@ -122,8 +130,12 @@ public class BookshelfListPanel extends JPanel {
             JOptionPane.showMessageDialog(null, "没有书架");
             return;
         }
-        ShelfItem shelfItem = list.getSelectedValue();
-        shelfItem.addBook(file);
+        Bookshelf shelfItem = list.getSelectedValue();
+        MyBook myBook = new MyBook(file.getName());
+        myBook.setFilePath(file.getAbsolutePath());
+        myBook.setFileName(file.getName());
+        bookshelfService.addBook(shelfItem.getId(),myBook);
+        shelfItem.addBook(myBook);
         bookShelfBoard.load(listModel.elementAt(selectedIndex));
     }
 
@@ -135,8 +147,8 @@ public class BookshelfListPanel extends JPanel {
 
             JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-            if (value instanceof ShelfItem) {
-                ShelfItem item = (ShelfItem) value;
+            if (value instanceof Bookshelf) {
+                Bookshelf item = (Bookshelf) value;
                 label.setText(item.getName());
                 String icon = item.getIcon();
                 if(null == icon){

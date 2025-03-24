@@ -2,7 +2,8 @@ package com.ereader.view;
 
 import com.ereader.Constants;
 import com.ereader.model.MyBook;
-import com.ereader.model.ShelfItem;
+import com.ereader.model.Bookshelf;
+import com.ereader.service.BookshelfService;
 import com.ereader.service.EpubBookService;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
@@ -10,10 +11,8 @@ import nl.siegmann.epublib.domain.Resource;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -30,7 +29,7 @@ public class BookShelfBoardPanel extends JPanel {
 
     private static final String default_cover = "/images/book.png";
     private List<MyBook> books;
-    private ShelfItem item;
+    private Bookshelf item;
     private int currentPage = 0;
     private final int booksPerPage = 20;
 
@@ -40,9 +39,15 @@ public class BookShelfBoardPanel extends JPanel {
         setLayout(new GridLayout(4, 5, 10, 10));
     }
 
-    public void load(ShelfItem item) {
-        this.item = item;
-        this.books = item.getBooks();
+    public void load(Bookshelf bookshelf) {
+        this.item = bookshelf;
+        this.books = bookshelf.getBooks();
+        setCurrentPage(0);
+    }
+
+    public void init(Bookshelf bookshelf) {
+        this.item = bookshelf;
+        this.books = BookshelfService.INSTANCE.getBooksByBookshelf(bookshelf.getId());
         setCurrentPage(0);
     }
 
