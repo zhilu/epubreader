@@ -18,13 +18,6 @@ public class MyBook {
     private String filePath;
     private Book book;
 
-    public MyBook() {
-    }
-
-    public MyBook(String name) {
-        this.bookName = name;
-    }
-
     @Override
     public String toString() {
         return this.bookName;

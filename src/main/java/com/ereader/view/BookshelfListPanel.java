@@ -1,9 +1,11 @@
 package com.ereader.view;
 
+import com.ereader.config.BookshelfConfig;
 import com.ereader.config.Constants;
 import com.ereader.model.Bookshelf;
 import com.ereader.model.MyBook;
 import com.ereader.service.BookshelfService;
+import com.ereader.service.StorageService;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
@@ -29,7 +31,7 @@ public class BookshelfListPanel extends JPanel {
     public BookshelfService bookshelfService = BookshelfService.INSTANCE;
 
     private static final String default_icon = "/images/books.png";
-    private static final float ICON_FACTOR = 1.5F;
+
 
     private JScrollPane pane;
     DefaultListModel<Bookshelf> listModel;
@@ -39,7 +41,7 @@ public class BookshelfListPanel extends JPanel {
 
     public BookshelfListPanel(BookShelfBoardPanel bookShelfBoard){
         setLayout(new BorderLayout());
-        bookshelfService.init();
+        StorageService.INSTANCE.init();
         this.bookShelfBoard = bookShelfBoard;
 
         listModel = new DefaultListModel<>();
@@ -131,7 +133,8 @@ public class BookshelfListPanel extends JPanel {
             return;
         }
         Bookshelf shelfItem = list.getSelectedValue();
-        MyBook myBook = new MyBook(file.getName());
+        MyBook myBook = new MyBook();
+        myBook.setBookName(file.getName());
         myBook.setFilePath(file.getAbsolutePath());
         myBook.setFileName(file.getName());
         bookshelfService.addBook(shelfItem.getId(),myBook);
@@ -154,8 +157,9 @@ public class BookshelfListPanel extends JPanel {
                 if(null == icon){
                     icon = default_icon;
                 }
+                BookshelfConfig config = BookshelfConfig.instance;
 
-                int iconSize = (int) (Constants.FONT_SIZE * ICON_FACTOR);
+                int iconSize = (int) (config.getIconSize());
 
 
                 ImageIcon imageIcon = new ImageIcon(getClass().getResource(icon));
@@ -163,7 +167,7 @@ public class BookshelfListPanel extends JPanel {
                 label.setIcon(new ImageIcon(img));
                 label.setHorizontalTextPosition(SwingConstants.RIGHT);
                 label.setVerticalTextPosition(SwingConstants.CENTER);
-                label.setFont(new Font(Constants.FONT_NAME, Font.PLAIN, Constants.FONT_SIZE));
+                label.setFont(new Font(config.getFontName(), Font.PLAIN, config.getFontSize()));
             }
 
             return label;

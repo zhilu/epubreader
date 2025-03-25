@@ -29,7 +29,7 @@ public class AppFrame extends JFrame{
     private AppFrame(){
         setTitle(APP_NAME);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(WIDTH,HEIGHT);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         BookshelfPanel panel =  BookshelfPanel.instance;
         setJMenuBar(panel.create());

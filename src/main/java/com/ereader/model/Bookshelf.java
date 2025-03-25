@@ -17,13 +17,6 @@ public class Bookshelf {
     private String icon;
     private List<MyBook> books = new ArrayList<>();
 
-    public Bookshelf(){
-    }
-
-    public Bookshelf(String name){
-        this.name = name;
-    }
-
     @Override
     public String toString() {
         return name;

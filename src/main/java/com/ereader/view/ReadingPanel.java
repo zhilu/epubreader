@@ -13,11 +13,10 @@ public class ReadingPanel extends JPanel {
     private static ReadingPanel INSTANCE = null;
 
 
-    private static final float percent= 0.18F;
+    private static final float percent= 0.12F;
     private static final float SPLIT_META= 0.8F;
 
     private Book book;
-    private EpubBookService epubBookService;
     private JSplitPane splitPane;
     private ReadingTOCPanel toc;
     private ReadingContentPanel contentPanel;

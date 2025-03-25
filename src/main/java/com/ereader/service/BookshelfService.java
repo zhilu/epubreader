@@ -1,7 +1,8 @@
 package com.ereader.service;
 
-import com.ereader.model.MyBook;
+import com.ereader.config.Constants;
 import com.ereader.model.Bookshelf;
+import com.ereader.model.MyBook;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,15 +16,12 @@ import java.util.List;
 public class BookshelfService {
 
 
-    private static final String DB_PATH = System.getProperty("user.home")+"/epubReader.db";
-    private static final String DB_URL = "jdbc:sqlite:" + DB_PATH;
+
+    private static final String DB_URL = "jdbc:sqlite:" + Constants.DB_PATH;
 
     public static BookshelfService INSTANCE = new BookshelfService();
 
-    public void init(){
-        createTableBookshelf();
-        creatTableBook();
-    }
+
 
     public List<Bookshelf> listBookshelf() {
         List<Bookshelf> bookshelves = new ArrayList<>();
@@ -192,37 +190,5 @@ public class BookshelfService {
 
 
 
-    //--表的初始化-------------------------------------------------------------
-    public void createTableBookshelf() {
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             Statement stmt = conn.createStatement()) {
-            String createBookshelfTable = """
-                CREATE TABLE IF NOT EXISTS bookshelf (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL
-                );
-                """;
-            stmt.execute(createBookshelfTable);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
-    public void creatTableBook() {
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             Statement stmt = conn.createStatement()) {
-            String createBookTable = """
-                CREATE TABLE IF NOT EXISTS book (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    bookshelf_id INTEGER NOT NULL,
-                    name TEXT NOT NULL,
-                    file_path TEXT NOT NULL,
-                    FOREIGN KEY (bookshelf_id) REFERENCES bookshelf (id) ON DELETE CASCADE
-                );
-                """;
-            stmt.execute(createBookTable);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 }
