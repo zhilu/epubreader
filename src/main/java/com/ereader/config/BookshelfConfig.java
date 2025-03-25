@@ -1,6 +1,5 @@
 package com.ereader.config;
 
-import com.ereader.model.Bookshelf;
 import lombok.Getter;
 import lombok.Setter;
 

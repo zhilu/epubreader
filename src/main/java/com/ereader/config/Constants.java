@@ -9,8 +9,6 @@ public class Constants {
 
     public static final String APP_NAME = "阅读器";
 
-    public static final int FONT_SIZE = 24;
-
     public static Color color = Color.GREEN;
 
 

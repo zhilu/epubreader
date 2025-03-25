@@ -1,11 +1,13 @@
 package com.ereader.view;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
 import java.awt.BorderLayout;
+import java.awt.Taskbar;
 
 import static com.ereader.config.Constants.APP_NAME;
 
@@ -30,6 +32,8 @@ public class AppFrame extends JFrame{
         setTitle(APP_NAME);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
+        ImageIcon icon = new ImageIcon(getClass().getResource("/images/app_icon.png"));
+        setIconImage(icon.getImage());
 
         BookshelfPanel panel =  BookshelfPanel.instance;
         setJMenuBar(panel.create());
