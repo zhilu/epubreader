@@ -1,6 +1,6 @@
 package com.ereader.view;
 
-import com.ereader.DesktopUtil;
+import com.ereader.util.DesktopUtil;
 import com.ereader.service.OpenAIService;
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.browsersupport.NavigationEvent;

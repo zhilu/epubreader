@@ -1,5 +1,5 @@
 
-package com.ereader;
+package com.ereader.util;
 
 import java.awt.Desktop;
 import java.net.URL;

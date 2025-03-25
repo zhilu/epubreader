@@ -1,4 +1,4 @@
-package com.ereader;
+package com.ereader.config;
 
 import java.awt.Color;
 

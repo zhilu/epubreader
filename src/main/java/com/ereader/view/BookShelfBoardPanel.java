@@ -1,6 +1,6 @@
 package com.ereader.view;
 
-import com.ereader.Constants;
+import com.ereader.config.Constants;
 import com.ereader.model.MyBook;
 import com.ereader.model.Bookshelf;
 import com.ereader.service.BookshelfService;

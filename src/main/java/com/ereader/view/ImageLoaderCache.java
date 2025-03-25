@@ -1,6 +1,6 @@
 package com.ereader.view;
 
-import com.ereader.Util;
+import com.ereader.util.Strings;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
@@ -60,7 +60,7 @@ class ImageLoaderCache extends Dictionary<String, Image> {
 		if (resource == null) {
 			return;
 		}
-		if (Util.isNotBlank(resource.getHref())) {
+		if (Strings.isNotBlank(resource.getHref())) {
 			int lastSlashPos = resource.getHref().lastIndexOf('/');
 			if (lastSlashPos >= 0) {
 				this.currentFolder = resource.getHref().substring(0, lastSlashPos + 1);
