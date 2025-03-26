@@ -1,5 +1,6 @@
 package com.ereader.view;
 
+import com.ereader.model.ReadingMode;
 import com.ereader.util.DesktopUtil;
 import com.ereader.service.OpenAIService;
 import nl.siegmann.epublib.Constants;
@@ -18,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.AttributeSet;
@@ -41,6 +43,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 /**
  * Displays a page
@@ -51,12 +54,40 @@ public class ReadingContentPanel extends JPanel implements NavigationEventListen
 	private static final long serialVersionUID = -5322988066178102320L;
 
 	private static final Logger log = LoggerFactory.getLogger(ReadingContentPanel.class);
+
+
 	private Navigator navigator;
 	private Resource currentResource;
 	private JEditorPane editorPane;
 	private JScrollPane scrollPane;
 	private HTMLDocumentFactory htmlDocumentFactory;
-	
+	private ReadingMode readingMode = ReadingMode.WHITE;
+
+	public void setReadingMode(ReadingMode readingMode){
+		if(Objects.equals(readingMode,this.readingMode)){
+			return;
+		}
+		this.readingMode = readingMode;
+
+		editorPane.setBackground(readingMode.getBackground());
+		editorPane.setForeground(readingMode.getForeground());
+
+		// 修改 HTML 样式
+
+		HTMLEditorKit htmlKit = (HTMLEditorKit) editorPane.getEditorKit();
+		htmlKit.getStyleSheet().removeStyle("body");
+		htmlKit.getStyleSheet().addRule("body { background-color: " + toHex(readingMode.getBackground()) + ";}");
+
+		editorPane.setDocument(editorPane.getDocument());
+		editorPane.revalidate();
+		editorPane.repaint();
+	}
+
+	private String toHex(Color color) {
+		return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
+	}
+
+
 	public ReadingContentPanel(Navigator navigator) {
 		super(new GridLayout(1, 0));
 		this.scrollPane = (JScrollPane) add(new JScrollPane());

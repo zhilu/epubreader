@@ -1,11 +1,12 @@
 package com.ereader.view;
 
-import com.ereader.service.EpubBookService;
+import com.ereader.model.ReadingMode;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
 
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.text.html.HTMLEditorKit;
 import java.awt.BorderLayout;
 
 public class ReadingPanel extends JPanel {
@@ -37,6 +38,12 @@ public class ReadingPanel extends JPanel {
         this.book = book;
         this.navigator = new Navigator();
         initUI();
+    }
+
+    public void setReadingMode(ReadingMode readingMode){
+        contentPanel.setReadingMode(readingMode);
+
+
     }
 
     private void initUI() {

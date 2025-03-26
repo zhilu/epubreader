@@ -1,6 +1,8 @@
 package com.ereader.view;
 
 import com.ereader.App;
+import com.ereader.model.ReadingMode;
+import lombok.Getter;
 
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
@@ -13,6 +15,12 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.BorderLayout;
 import java.io.File;
 import java.util.prefs.Preferences;
+
+import static com.ereader.model.ReadingMode.DARK_BLUE;
+import static com.ereader.model.ReadingMode.DARK_GREEN;
+import static com.ereader.model.ReadingMode.GREEN;
+import static com.ereader.model.ReadingMode.WHITE;
+import static com.ereader.model.ReadingMode.YELLOW;
 
 public class BookshelfPanel extends JPanel {
 
@@ -63,6 +71,30 @@ public class BookshelfPanel extends JPanel {
 
         JMenuItem toggleViewItem = new JMenuItem("Toggle View");
         viewMenu.add(toggleViewItem);
+
+        JMenu readMode = new JMenu("mode");
+        JMenuItem darkMode = new JMenuItem("dark");
+        JMenuItem dark2 = new JMenuItem("green");
+        JMenuItem whiteMode = new JMenuItem("white");
+
+        JMenuItem yellowMode = new JMenuItem("yellow");
+        JMenuItem greenMode = new JMenuItem("green");
+
+        readMode.add(whiteMode);
+        readMode.add(darkMode);
+        readMode.add(dark2);
+        readMode.add(yellowMode);
+        readMode.add(greenMode);
+        viewMenu.add(readMode);
+
+        darkMode.addActionListener(e -> ReadingPanel.getInstance().setReadingMode(DARK_BLUE));
+        dark2.addActionListener(e -> ReadingPanel.getInstance().setReadingMode(DARK_GREEN));
+        whiteMode.addActionListener(e -> ReadingPanel.getInstance().setReadingMode(WHITE));
+        yellowMode.addActionListener(e -> ReadingPanel.getInstance().setReadingMode(YELLOW));
+        greenMode.addActionListener(e -> ReadingPanel.getInstance().setReadingMode(GREEN));
+
+
+
 
         JMenuItem aboutItem = new JMenuItem("About");
         aboutItem.addActionListener(e -> JOptionPane.showMessageDialog(null, "BookshelfApp v1.0\nCreated by YourName"));
