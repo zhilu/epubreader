@@ -1,14 +1,15 @@
 package com.ereader.view;
 
 import com.ereader.model.ReadingMode;
+import lombok.extern.slf4j.Slf4j;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
 
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.text.html.HTMLEditorKit;
 import java.awt.BorderLayout;
 
+@Slf4j
 public class ReadingPanel extends JPanel {
 
     private static ReadingPanel INSTANCE = null;
@@ -19,9 +20,11 @@ public class ReadingPanel extends JPanel {
 
     private Book book;
     private JSplitPane splitPane;
-    private ReadingTOCPanel toc;
+    private ReadingTOCPanel tocPanel;
+    private JSplitPane leftPanel;
     private ReadingContentPanel contentPanel;
     private Navigator navigator = new Navigator();
+    private boolean showToc = true;
 
     public static ReadingPanel getInstance(){
         if(null == INSTANCE){
@@ -42,8 +45,6 @@ public class ReadingPanel extends JPanel {
 
     public void setReadingMode(ReadingMode readingMode){
         contentPanel.setReadingMode(readingMode);
-
-
     }
 
     private void initUI() {
@@ -51,12 +52,12 @@ public class ReadingPanel extends JPanel {
 
         // 创建分割面板
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        toc = new ReadingTOCPanel(navigator);
+        tocPanel = new ReadingTOCPanel(navigator);
         contentPanel = new ReadingContentPanel(navigator);
 
-        JSplitPane leftPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        leftPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         MetadataPanel metadataPane = new MetadataPanel(navigator);
-        leftPanel.setTopComponent(toc);
+        leftPanel.setTopComponent(tocPanel);
         leftPanel.setBottomComponent(metadataPane);
         leftPanel.setResizeWeight(SPLIT_META);
 
@@ -72,5 +73,17 @@ public class ReadingPanel extends JPanel {
 
         revalidate();
         repaint();
+    }
+
+    public void changeTocPanel() {
+        showToc = !showToc;
+        if (showToc) {
+            splitPane.setLeftComponent(leftPanel);
+        } else {
+            splitPane.remove(leftPanel);
+
+        }
+        splitPane.revalidate();
+        splitPane.repaint();
     }
 }

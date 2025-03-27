@@ -94,6 +94,10 @@ public class BookshelfPanel extends JPanel {
         greenMode.addActionListener(e -> ReadingPanel.getInstance().setReadingMode(GREEN));
 
 
+        JMenuItem tocItem = new JMenuItem("TOC");
+        viewMenu.add(tocItem);
+        tocItem.addActionListener(e -> ReadingPanel.getInstance().changeTocPanel());
+
 
 
         JMenuItem aboutItem = new JMenuItem("About");

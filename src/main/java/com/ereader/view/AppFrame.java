@@ -31,7 +31,8 @@ public class AppFrame extends JFrame{
     private AppFrame(){
         setTitle(APP_NAME);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+//        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setSize(WIDTH,HEIGHT);
         ImageIcon icon = new ImageIcon(getClass().getResource("/images/app_icon.png"));
         setIconImage(icon.getImage());
 
