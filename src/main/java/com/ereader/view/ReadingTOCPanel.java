@@ -14,6 +14,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -159,6 +160,7 @@ public class ReadingTOCPanel extends JPanel implements NavigationEventListener {
 			}
 		});
 
+		tree.setFont(new Font("SansSerif", Font.PLAIN, 18));
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 //		tree.setRootVisible(false);
 		tree.setSelectionRow(0);

@@ -68,25 +68,7 @@ public class ReadingContentPanel extends JPanel implements NavigationEventListen
 			return;
 		}
 		this.readingMode = readingMode;
-
-		editorPane.setBackground(readingMode.getBackground());
-		editorPane.setForeground(readingMode.getForeground());
-
-		// 修改 HTML 样式
-
-		HTMLEditorKit htmlKit = (HTMLEditorKit) editorPane.getEditorKit();
-		htmlKit.getStyleSheet().removeStyle("body");
-		htmlKit.getStyleSheet().addRule("body { background-color: " + toHex(readingMode.getBackground()) + ";}");
-
-		editorPane.setDocument(editorPane.getDocument());
-		editorPane.revalidate();
-		editorPane.repaint();
 	}
-
-	private String toHex(Color color) {
-		return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
-	}
-
 
 	public ReadingContentPanel(Navigator navigator) {
 		super(new GridLayout(1, 0));
@@ -140,7 +122,7 @@ public class ReadingContentPanel extends JPanel implements NavigationEventListen
 					if (viewPosition.getY() + viewportHeight + increment > scrollMax) {
 						if (gotoNextPage) {
 							gotoNextPage = false;
-							ReadingContentPanel.this.navigator.gotoNextSpineSection(ReadingContentPanel.this);
+							ReadingContentPanel.this.navigator.gotoNextSpineSection(this);
 						} else {
 							gotoNextPage = true;
 							int newY = scrollMax - viewportHeight;
@@ -360,7 +342,7 @@ public class ReadingContentPanel extends JPanel implements NavigationEventListen
 				return;
 			}
 			currentResource = resource;
-			System.out.println(new String(resource.getData(), StandardCharsets.UTF_8));
+			log.debug(new String(resource.getData(), StandardCharsets.UTF_8));
 			editorPane.setDocument(document);
 			scrollToCurrentPosition(sectionPos);
 		} catch (Exception e) {
