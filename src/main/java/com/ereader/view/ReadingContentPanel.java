@@ -15,10 +15,12 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.JEditorPane;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
@@ -29,7 +31,9 @@ import javax.swing.text.Highlighter;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -60,6 +64,11 @@ public class ReadingContentPanel extends JPanel implements NavigationEventListen
 	private Resource currentResource;
 	private JEditorPane editorPane;
 	private JScrollPane scrollPane;
+	private JSplitPane splitPane;
+	private JPanel translationPanel;
+	private JTextPane translationPane;
+	private boolean isTranslationPanelVisible = false;
+
 	private HTMLDocumentFactory htmlDocumentFactory;
 	private ReadingMode readingMode = ReadingMode.WHITE;
 
@@ -71,8 +80,14 @@ public class ReadingContentPanel extends JPanel implements NavigationEventListen
 	}
 
 	public ReadingContentPanel(Navigator navigator) {
-		super(new GridLayout(1, 0));
-		this.scrollPane = (JScrollPane) add(new JScrollPane());
+		super(new GridLayout(1,0));
+		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		splitPane.setDividerLocation(400);
+		splitPane.setResizeWeight(0.70);
+
+		add(splitPane);
+
+		this.scrollPane = new JScrollPane();
 		this.scrollPane.addKeyListener(new KeyListener() {
 			
 			@Override
@@ -132,10 +147,20 @@ public class ReadingContentPanel extends JPanel implements NavigationEventListen
 			    }
 			  }
 		});
+
+		translationPane = new JTextPane();
+		translationPane.setContentType("text/html");
+		translationPane.setEditable(false);
+
+		translationPanel = new JPanel(new BorderLayout());
+		translationPanel.add(new JScrollPane(translationPane), BorderLayout.CENTER);
+		translationPanel.setPreferredSize(new Dimension(300, getHeight()));
+
 		this.navigator = navigator;
 		navigator.addNavigationEventListener(this);
 		this.editorPane = createJEditorPane();
 		scrollPane.getViewport().add(editorPane);
+		splitPane.add(scrollPane);
 		this.htmlDocumentFactory = new HTMLDocumentFactory(navigator, editorPane.getEditorKit());
 		initBook(navigator.getBook());
 	}
@@ -319,13 +344,45 @@ public class ReadingContentPanel extends JPanel implements NavigationEventListen
 		}
 	}
 
+	private StringBuilder htmlBuilder = new StringBuilder("<html><body style='font-family:sans-serif;'>");
+
+
 	private void translateText(String text) {
 		if (text == null || text.isEmpty()) return;
 
-		// 这里可以调用翻译接口，例如 Google 翻译 API
-		String translatedText = OpenAIService.INSTANCE.translate(text); // 假设翻译后的文本
+		String translatedText = OpenAIService.INSTANCE.translate(text);
 
-		JOptionPane.showMessageDialog(null, translatedText, "翻译结果", JOptionPane.INFORMATION_MESSAGE);
+		// 动态添加右侧翻译栏（如果尚未添加）
+		if (!isTranslationPanelVisible) {
+			splitPane.add(translationPane);
+			this.revalidate(); // 通知重新布局
+			this.repaint();
+			isTranslationPanelVisible = true;
+		}
+
+		String originText = text;
+		if(text.length()>50){
+			originText = text.substring(0, 20) + "..." + text.substring(text.length() - 25);
+		}
+
+		// 美化的 HTML 显示内容
+		htmlBuilder.append("<div style='margin-bottom:15px;'>")
+				.append("<div style='color:#555;font-weight:bold;'>原文：</div>")
+				.append("<div style='margin:5px 0;'>" + escapeHtml(originText) + "</div>")
+				.append("<div style='color:#2a7ae2;font-weight:bold;'>翻译：</div>")
+				.append("<div style='margin:5px 0;'>" + escapeHtml(translatedText) + "</div>")
+				.append("<hr style='border:0;border-top:1px solid #ccc;'/>")
+				.append("</div>");
+
+		translationPane.setText(htmlBuilder.toString());
+		translationPane.setCaretPosition(translationPane.getDocument().getLength());
+	}
+
+	private String escapeHtml(String text) {
+		return text.replace("&", "&amp;")
+				.replace("<", "&lt;")
+				.replace(">", "&gt;")
+				.replace("\n", "<br>");
 	}
 
 	public void displayPage(Resource resource) {
