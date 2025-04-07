@@ -12,7 +12,9 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -20,6 +22,8 @@ import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.List;
 
@@ -56,7 +60,6 @@ public class BookShelfBoardPanel extends JPanel {
         this.currentPage = page;
         repaint();
         updateGrid();
-
     }
 
     @Override
@@ -119,6 +122,21 @@ public class BookShelfBoardPanel extends JPanel {
             bookButton.addActionListener(e -> {
                 onBookClicked(epubBook);
             });
+
+            JPopupMenu popupMenu = new JPopupMenu();
+            JMenuItem deleteItem = new JMenuItem("删除");
+            deleteItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    BookshelfService.INSTANCE.deleteBook(book.getId());
+                    books.remove(book);
+                    updateGrid();
+                }
+            });
+            popupMenu.add(deleteItem);
+
+            // 右键事件
+            bookButton.setComponentPopupMenu(popupMenu);
 
             
             add(bookButton);
